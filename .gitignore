@@ -18,6 +18,9 @@
 x64/
 [Bb]in/
 [Oo]bj/
+bin
+obj
+Properties
 # build folder is nowadays used for build scripts and should not be ignored
 #build/
 
@@ -195,6 +198,7 @@ Icon?
 
 # Visual Studio temp something
 .vs/
+.vs
 
 # dotnet stuff
 project.lock.json
