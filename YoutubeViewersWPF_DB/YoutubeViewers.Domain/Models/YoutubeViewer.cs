@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace YoutubeViewers.WPF.Models
+namespace YoutubeViewers.Domain.Models
 {
     public class YoutubeViewer
     {

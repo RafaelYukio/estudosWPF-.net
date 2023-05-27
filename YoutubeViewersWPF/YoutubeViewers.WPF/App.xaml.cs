@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using YoutubeViewers.WPF.Stores;
 using YoutubeViewers.WPF.ViewModels;
 
@@ -20,16 +14,24 @@ namespace YoutubeViewers.WPF
     public partial class App : Application
     {
         private readonly SelectedYoutubeViewerStore _selectedYoutubeViewerStore;
+        private readonly YoutubeViewersStore _youtubeViewersStore;
         private readonly ModalNavigationStore _modalNavigationStore;
 
         public App()
         {
-            _selectedYoutubeViewerStore = new SelectedYoutubeViewerStore();
+            // É normal stores dependerem de outras stores
+            // O que é bom para ter certeza de que toda informação estão atualizadas entre si na store
+            // Sendo as stores a única fonte de dado verdadeira/atualizada
+            // *Tomar cuidado com dependência circular
+            _youtubeViewersStore = new YoutubeViewersStore();
             _modalNavigationStore = new ModalNavigationStore();
+            _selectedYoutubeViewerStore = new SelectedYoutubeViewerStore(_youtubeViewersStore);
         }
         protected override void OnStartup(StartupEventArgs e)
         {
-            YoutubeViewersViewModel youtubeViewersViewModel = new(_selectedYoutubeViewerStore, _modalNavigationStore);
+            YoutubeViewersViewModel youtubeViewersViewModel = new(_selectedYoutubeViewerStore,
+                                                                  _youtubeViewersStore,
+                                                                  _modalNavigationStore);
 
             MainWindow = new MainWindow()
             {

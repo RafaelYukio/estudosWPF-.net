@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
 using YoutubeViewers.WPF.Commands;
-using YoutubeViewers.WPF.Models;
+using YoutubeViewers.Domain.Models;
 using YoutubeViewers.WPF.Stores;
 
 namespace YoutubeViewers.WPF.ViewModels
@@ -31,10 +31,11 @@ namespace YoutubeViewers.WPF.ViewModels
                 _selectedYoutubeViewerListingItemViewModel = value;
                 OnPropertyChanged(nameof(SelectedYoutubeViewerListingItemViewModel));
 
-                _selectedYoutubeViewerStore.SelectedYoutubeViewer = _selectedYoutubeViewerListingItemViewModel.YoutubeViewer;
+                _selectedYoutubeViewerStore.SelectedYoutubeViewer = _selectedYoutubeViewerListingItemViewModel?.YoutubeViewer;
             }
         }
 
+        public ICommand LoadYoutubeViewersCommand { get; }
 
         public YoutubeViewersListingViewModel(SelectedYoutubeViewerStore selectedYoutubeViewerStore,
                                               YoutubeViewersStore youtubeViewersStore,
@@ -45,14 +46,42 @@ namespace YoutubeViewers.WPF.ViewModels
             _modalNavigationStore = modalNavigationStore;
             _youtubeViewersListingItemViewModels = new ObservableCollection<YoutubeViewersListingItemViewModel>();
 
-            // Subscribing no YoutubeViewersStore para Added e Updated
+            LoadYoutubeViewersCommand = new LoadYoutubeViewersCommand(youtubeViewersStore);
+            // Poderiamos executar o comando de Load aqui no construtor
+            // porém não é uma boa prática ter lógicas complicadas aqui dentro
+            // ainda mais que este método faz uma query na DB
+            // Ex.: LoadYoutubeViewersCommand.Execute();
+
+            // Subscribing no YoutubeViewersStore para Added, Updated e Loaded
+            _youtubeViewersStore.YoutubeViewersLoaded += YoutubeViewersStore_YoutubeViewersLoaded;
             _youtubeViewersStore.YoutubeViewerAdded += YoutubeViewersStore_YoutubeViewerAdded;
             _youtubeViewersStore.YoutubeViewerUpdated += YoutubeViewersStore_YoutubeViewerUpdated;
+            _youtubeViewersStore.YoutubeViewerDeleted += YoutubeViewersStore_YoutubeViewerDeleted;
+        }
 
-            AddYoutubeViewer(new YoutubeViewer(Guid.NewGuid(), "RafaelMock", true, true));
-            AddYoutubeViewer(new YoutubeViewer(Guid.NewGuid(), "MariaMock", true, false));
-            AddYoutubeViewer(new YoutubeViewer(Guid.NewGuid(), "SeanMock", false, true));
-            AddYoutubeViewer(new YoutubeViewer(Guid.NewGuid(), "TesteMock", false, false));
+        // Para não fazer o Load direto no construtor, instanciamos nosso ViewModel
+        // Chama: Factory Method
+        // Então ao invés de chamar o construto apra instanciar essa ViewModel, chamamos esse LoadViewModel
+        public static YoutubeViewersListingViewModel LoadViewModel(SelectedYoutubeViewerStore selectedYoutubeViewerStore,
+                                                                   YoutubeViewersStore youtubeViewersStore,
+                                                                   ModalNavigationStore modalNavigationStore)
+        {
+            YoutubeViewersListingViewModel viewModel = new YoutubeViewersListingViewModel(selectedYoutubeViewerStore,
+                                                                                          youtubeViewersStore,
+                                                                                          modalNavigationStore);
+
+            viewModel.LoadYoutubeViewersCommand.Execute(null);
+            return viewModel;
+        }
+
+        private void YoutubeViewersStore_YoutubeViewersLoaded()
+        {
+            _youtubeViewersListingItemViewModels.Clear();
+
+            foreach (YoutubeViewer youtubeViewer in _youtubeViewersStore.YoutubeViewers)
+            {
+                AddYoutubeViewer(youtubeViewer);
+            }
         }
 
         private void YoutubeViewersStore_YoutubeViewerUpdated(YoutubeViewer youtubeViewer)
@@ -66,11 +95,24 @@ namespace YoutubeViewers.WPF.ViewModels
             }
         }
 
+        private void YoutubeViewersStore_YoutubeViewerDeleted(Guid youtubeViewerId)
+        {
+            YoutubeViewersListingItemViewModel youtubeViewerViewModel =
+                _youtubeViewersListingItemViewModels.FirstOrDefault(y => y.YoutubeViewer.Id == youtubeViewerId);
+
+            if (youtubeViewerViewModel != null)
+            {
+                _youtubeViewersListingItemViewModels.Remove(youtubeViewerViewModel);
+            }
+        }
+
         // Unsubscribe para prevenir memory leak (pesquisar sobre)
         protected override void Dispose()
         {
+            _youtubeViewersStore.YoutubeViewersLoaded -= YoutubeViewersStore_YoutubeViewersLoaded;
             _youtubeViewersStore.YoutubeViewerAdded -= YoutubeViewersStore_YoutubeViewerAdded;
             _youtubeViewersStore.YoutubeViewerUpdated -= YoutubeViewersStore_YoutubeViewerUpdated;
+            _youtubeViewersStore.YoutubeViewerDeleted -= YoutubeViewersStore_YoutubeViewerDeleted;
             base.Dispose();
         }
 
