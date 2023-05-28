@@ -1,0 +1,36 @@
+﻿<UserControl x:Class="YoutubeViewers.WPF.Components.YoutubeViewersListing"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:YoutubeViewers.WPF.Components"
+             xmlns:custom="clr-namespace:DropdownMenuControl;assembly=DropdownMenuControl"
+             mc:Ignorable="d"
+             d:DesignHeight="450"
+             d:DesignWidth="800">
+    <Grid>
+        <Border BorderBrush="{StaticResource BorderPrimary}"
+                SnapsToDevicePixels="True"
+                CornerRadius="5"
+                Padding="20"
+                BorderThickness="1">
+            <ListView SelectionMode="Single"
+                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                      BorderThickness="0"
+                      ItemsSource="{Binding YoutubeViewersListingItemViewModels}"
+                      SelectedItem="{Binding SelectedYoutubeViewerListingItemViewModel}">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment"
+                                Value="Stretch" />
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <local:YoutubeViewersListingItem />
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Border>
+    </Grid>
+</UserControl>
