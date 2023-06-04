@@ -92,6 +92,6 @@
                    Margin="0 15 0 0"
                    Text="{Binding ErrorMessage}"
                    Style="{StaticResource ErrorMessage}"
-                   Visibility="{Binding HasErrorMassage, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                   Visibility="{Binding HasErrorMessage, Converter={StaticResource BooleanToVisibilityConverter}}" />
     </Grid>
 </UserControl>
