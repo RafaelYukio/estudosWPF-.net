@@ -11,7 +11,7 @@
 
     <!--Seguindo o vídeo do Payload para demonstrar o INotifyPropertyChanged:
     https://www.youtube.com/watch?v=gOf2FZ6dkbU&list=FLawtE1QiQ3kttrk_KBFfGxw&index=2-->
-    
+
     <!--PRECISEI SEPARAR A CLASSE QUE IMPLEMENTA O ONPROPERTYCHANGED, POIS NÃO FUNCIONAVAM MAIS AS ATUALIZAÇÕES PADRÕES-->
 
     <Window.DataContext>
@@ -29,15 +29,23 @@
         <Label Content="- Demonstração de atualização do Input (UI) para a Label (UI):"
                Margin="0 40 0 0" />
         <Label Content="Abaixo o Label está binding com o Input 1 (TriggerDefault):" />
-        <Label Content="{Binding ExampleModel.TriggerDefault}" />
+        <Label Content="{Binding ExampleModel.TriggerDefault}"
+               BorderBrush="Black"
+               BorderThickness="0.5" />
         <Label Content="Abaixo o Label está binding com o Input 2 (TriggerPropertyChanged):" />
-        <Label Content="{Binding ExampleModel.TriggerPropertyChanged}" />
+        <Label Content="{Binding ExampleModel.TriggerPropertyChanged}"
+               BorderBrush="Black"
+               BorderThickness="0.5" />
 
         <Label Content="- Demonstração de não atualização da Model para UI:"
                Margin="0 40 0 0" />
         <Label Content="Abaixo o Label está binding com prop. que muda da Model (RandomFromModel) (ver no Console/Output):" />
-        <Label Content="{Binding ExampleModel.RandomFromModel}" />
+        <Label Content="{Binding ExampleModel.RandomFromModel}"
+               BorderBrush="Black"
+               BorderThickness="0.5" />
         <Label Content="Abaixo o Label está binding com prop. que muda da Model com OnPropertyChanged (RandomFromModelOnPropertyChanged) (ver no Console/Output):" />
-        <Label Content="{Binding ExampleModelOnPropertyChanged.RandomFromModelOnPropertyChanged}" />
+        <Label Content="{Binding ExampleModelOnPropertyChanged.RandomFromModelOnPropertyChanged}"
+               BorderBrush="Black"
+               BorderThickness="0.5" />
     </StackPanel>
 </Window>
